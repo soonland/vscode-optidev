@@ -2,11 +2,11 @@
     "name": "optidev-terminals",
     "displayName": "OptiDev Terminals",
     "description": "A VS Code extension that automatically creates two terminals with user-defined commands.",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "icon": "media/icon.png",
     "galleryBanner": {
         "color": "#2a6dab",
-        "theme": "light"
+        "theme": "dark"
     },
     "publisher": "soonland",
     "license": "MIT",
@@ -61,7 +61,7 @@
             "type": "object",
             "title": "Start Dev and Cypress Terminals Configuration",
             "properties": {
-                "optiDev.onStartupFinished": {
+                "optiDev.startTerminalsAutomatically": {
                     "type": "boolean",
                     "default": false,
                     "description": "Automatically start the terminals when VS Code starts"
