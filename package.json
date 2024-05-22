@@ -1,0 +1,93 @@
+{
+    "name": "optidev-terminals",
+    "displayName": "OptiDev Terminals",
+    "description": "A VS Code extension that automatically creates two terminals with user-defined commands.",
+    "version": "0.0.1",
+    "icon": "media/icon.png",
+    "publisher": "soonland",
+    "license": "MIT",
+    "extensionKind": [
+        "ui"
+    ],
+    "keywords": [
+        "terminal",
+        "dev",
+        "cypress"
+    ],
+    "repository": {
+        "url": "https://github.com/soonland/vscode-optidev.git"
+    },
+    "bugs": {
+        "url": "https://github.com/soonland/vscode-optidev/issues"
+    },
+    "engines": {
+        "vscode": "^1.60.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onStartupFinished"
+    ],
+    "main": "./out/extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "optidev.startTerminals",
+                "title": "OptiDev: Start Dev and Cypress"
+            },
+            {
+                "command": "optidev.configureDevCommand",
+                "title": "OptiDev: Configure Dev Server Command"
+            },
+            {
+                "command": "optidev.configureCypressCommand",
+                "title": "OptiDev: Configure Cypress Command"
+            },
+            {
+                "command": "optidev.configureStartOnStartup",
+                "title": "OptiDev: Configure Start On Startup"
+            },
+            {
+                "command": "optidev.showCurrentConfig",
+                "title": "OptiDev: Show Current Configuration"
+            }
+        ],
+        "configuration": {
+            "type": "object",
+            "title": "Start Dev and Cypress Terminals Configuration",
+            "properties": {
+                "optiDev.onStartupFinished": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Automatically start the terminals when VS Code starts"
+                },
+                "optiDev.devCommand": {
+                    "type": "string",
+                    "default": "npm run dev",
+                    "description": "Command to run in the first terminal (Dev Server)"
+                },
+                "optiDev.cypressCommand": {
+                    "type": "string",
+                    "default": "npm run cypress:open",
+                    "description": "Command to run in the second terminal (Cypress)"
+                }
+            }
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -w -p ./",
+        "pretest": "npm run compile && npm run lint",
+        "lint": "eslint src --ext ts",
+        "test": "node ./out/test/runTest.js"
+    },
+    "devDependencies": {
+        "@types/node": "^14.0.0",
+        "@types/vscode": "^1.60.0",
+        "tslint": "^6.1.0",
+        "typescript": "^4.0.0",
+        "vscode-test": "^1.4.0"
+    }
+}
