@@ -50,7 +50,7 @@ function showMainMenu() {
             } else if (selection[0].label === 'Configure Cypress Command') {
                 vscode.commands.executeCommand('optidev.configureCypressCommand');
             } else if (selection[0].label === 'Configure Start Terminals Automatically') {
-                vscode.commands.executeCommand('optidev.configureStartTerminalsOnStartup');
+                vscode.commands.executeCommand('optidev.configureStartOnStartup');
             } else if (selection[0].label === 'Show Current Configuration') {
                 showConfiguration();
             }
@@ -79,7 +79,7 @@ export function activate(context: vscode.ExtensionContext) {
         showConfiguration();
     });
 
-    let configureStartTerminalsOnStartup = vscode.commands.registerCommand('optidev.configureStartOnStartup', async () => {
+    let configureStartOnStartup = vscode.commands.registerCommand('optidev.configureStartOnStartup', async () => {
         const startTerminalsOnStartup = await vscode.window.showQuickPick(['Yes', 'No'], { placeHolder: 'Start terminals automatically on startup?' });
         if (startTerminalsOnStartup === 'Yes') {
             await vscode.workspace.getConfiguration('optiDev').update('startTerminalsAutomatically', true, vscode.ConfigurationTarget.Workspace);
@@ -94,7 +94,7 @@ export function activate(context: vscode.ExtensionContext) {
         showMainMenu();
     });
 
-    context.subscriptions.push(startTerminals, configureDevCommand, configureCypressCommand, configureStartTerminalsOnStartup, showCurrentConfig, showMainMenuCommand);
+    context.subscriptions.push(startTerminals, configureDevCommand, configureCypressCommand, configureStartOnStartup, showCurrentConfig, showMainMenuCommand);
 
     // Check configuration on startup
     checkConfiguration(context);
@@ -202,7 +202,7 @@ function checkConfiguration(context: vscode.ExtensionContext) {
                 vscode.window.showInformationMessage('All configurations are set and terminals started');
             }
         });
-    } else {
+    } else if (startTerminalsOnStartup) {
         startTerminalsAutomatically(context);
     }
 }
