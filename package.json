@@ -2,7 +2,7 @@
     "name": "optidev-terminals",
     "displayName": "OptiDev Terminals",
     "description": "A VS Code extension that automatically creates two terminals with user-defined commands.",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "icon": "media/icon.png",
     "galleryBanner": {
         "color": "#2a6dab",
