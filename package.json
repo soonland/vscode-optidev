@@ -57,6 +57,30 @@
                 "title": "OptiDev: Show Current Configuration"
             }
         ],
+        "menus": {
+            "commandPalette": [
+                {
+                    "command": "optidev.startTerminals",
+                    "when": "workspaceFolderCount > 0"
+                },
+                {
+                    "command": "optidev.configureDevCommand",
+                    "when": "workspaceFolderCount > 0"
+                },
+                {
+                    "command": "optidev.configureCypressCommand",
+                    "when": "workspaceFolderCount > 0"
+                },
+                {
+                    "command": "optidev.showCurrentConfig",
+                    "when": "workspaceFolderCount > 0"
+                },
+                {
+                    "command": "optidev.configureStartOnStartup",
+                    "when": "workspaceFolderCount > 0"
+                }
+            ]
+        },
         "configuration": {
             "type": "object",
             "title": "Start Dev and Cypress Terminals Configuration",
