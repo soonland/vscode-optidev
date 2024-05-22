@@ -4,6 +4,10 @@
     "description": "A VS Code extension that automatically creates two terminals with user-defined commands.",
     "version": "0.0.1",
     "icon": "media/icon.png",
+    "galleryBanner": {
+        "color": "#2a6dab",
+        "theme": "light"
+    },
     "publisher": "soonland",
     "license": "MIT",
     "extensionKind": [
