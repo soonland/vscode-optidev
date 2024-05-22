@@ -2,14 +2,11 @@ import * as vscode from 'vscode';
 
 const devCommandDefault: string = 'npm run dev';
 const cypressCommandDefault: string = 'npm run cypress:open';
-const devCommandKey: string = 'devCommand';
-const cypressCommandKey: string = 'cypressCommand';
-const startTerminalsAutomaticallyKey: string = 'startTerminalsAutomatically';
 
 function showConfiguration() {
-    const devCommand = vscode.workspace.getConfiguration('optiDev').get<string>(devCommandKey, devCommandDefault);
-    const cypressCommand = vscode.workspace.getConfiguration('optiDev').get<string>(cypressCommandKey, cypressCommandDefault);
-    const startTerminalsOnStartup = vscode.workspace.getConfiguration('optiDev').get<boolean>(startTerminalsAutomaticallyKey, false);
+    const devCommand = vscode.workspace.getConfiguration('optiDev').get<string>('devCommand', devCommandDefault);
+    const cypressCommand = vscode.workspace.getConfiguration('optiDev').get<string>('cypressCommand', cypressCommandDefault);
+    const startTerminalsOnStartup = vscode.workspace.getConfiguration('optiDev').get<boolean>('startTerminalsAutomatically', false);
 
     const items: vscode.QuickPickItem[] = [
         { label: 'Dev Command', detail: devCommand },
@@ -25,7 +22,6 @@ function showConfiguration() {
         if (selection[0]) {
             if (selection[0].label === '$(arrow-left) Back') {
                 quickPick.hide();
-                // go back to the previous menu
                 showMainMenu();
             } else {
                 vscode.window.showInformationMessage(`Selected: ${selection[0].label}`);
@@ -39,7 +35,7 @@ function showMainMenu() {
     const items: vscode.QuickPickItem[] = [
         { label: 'Configure Dev Command', alwaysShow: true },
         { label: 'Configure Cypress Command', alwaysShow: true },
-        { label: 'Configure Start Terminals Automatically', alwaysShow: true},
+        { label: 'Configure Start Terminals Automatically', alwaysShow: true },
         { label: 'Show Current Configuration', alwaysShow: true }
     ];
 
@@ -66,51 +62,45 @@ function showMainMenu() {
 export function activate(context: vscode.ExtensionContext) {
     console.log('Extension "start-dev-cypress-terminals" is now active!');
 
-    // Start terminals command
+    // Register commands with workspace configuration
     let startTerminals = vscode.commands.registerCommand('optidev.startTerminals', () => {
         startTerminalsAutomatically(context);
     });
 
-    // Check configuration
-    checkConfiguration(context);
-
-    // Configure Dev Command
     let configureDevCommand = vscode.commands.registerCommand('optidev.configureDevCommand', async () => {
-        await configureCommand(devCommandKey, 'OptiDev: Configure Dev Server Command');
+        await configureCommand('devCommand', 'OptiDev: Configure Dev Server Command');
     });
 
-    // Configure Cypress Command
     let configureCypressCommand = vscode.commands.registerCommand('optidev.configureCypressCommand', async () => {
-        await configureCommand(cypressCommandKey, 'OptiDev: Configure Cypress Command');
-    });
-    
-    // Configure Start Terminals Automatically
-    let configureStartTerminalsOnStartup = vscode.commands.registerCommand('optidev.configureStartTerminalsOnStartup', async () => {
-        const startTerminalsOnStartup = await vscode.window.showQuickPick(['Yes', 'No'], { placeHolder: 'Start terminals automatically on startup?' });
-        if (startTerminalsOnStartup === 'Yes') {
-            await vscode.workspace.getConfiguration('optiDev').update(startTerminalsAutomaticallyKey, true, vscode.ConfigurationTarget.Global);
-            vscode.window.showInformationMessage('Automatic start of terminals is enabled');
-        } else {
-            await vscode.workspace.getConfiguration('optiDev').update(startTerminalsAutomaticallyKey, false, vscode.ConfigurationTarget.Global);
-            vscode.window.showInformationMessage('Automatic start of terminals is disabled');
-        }
+        await configureCommand('cypressCommand', 'OptiDev: Configure Cypress Command');
     });
 
-    // Show current configuration
     let showCurrentConfig = vscode.commands.registerCommand('optidev.showCurrentConfig', () => {
         showConfiguration();
     });
 
-    // Show main menu
+    let configureStartTerminalsOnStartup = vscode.commands.registerCommand('optidev.configureStartOnStartup', async () => {
+        const startTerminalsOnStartup = await vscode.window.showQuickPick(['Yes', 'No'], { placeHolder: 'Start terminals automatically on startup?' });
+        if (startTerminalsOnStartup === 'Yes') {
+            await vscode.workspace.getConfiguration('optiDev').update('startTerminalsAutomatically', true, vscode.ConfigurationTarget.Workspace);
+            vscode.window.showInformationMessage('Automatic start of terminals is enabled');
+        } else {
+            await vscode.workspace.getConfiguration('optiDev').update('startTerminalsAutomatically', false, vscode.ConfigurationTarget.Workspace);
+            vscode.window.showInformationMessage('Automatic start of terminals is disabled');
+        }
+    });
+
     let showMainMenuCommand = vscode.commands.registerCommand('optidev.showMainMenu', () => {
         showMainMenu();
     });
 
     context.subscriptions.push(startTerminals, configureDevCommand, configureCypressCommand, configureStartTerminalsOnStartup, showCurrentConfig, showMainMenuCommand);
+
+    // Check configuration on startup
+    checkConfiguration(context);
 }
 
 function startTerminalsAutomatically(context: vscode.ExtensionContext) {
-    // Get the current workspace folder
     const currentWorkspace = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
 
     if (!currentWorkspace) {
@@ -120,25 +110,23 @@ function startTerminalsAutomatically(context: vscode.ExtensionContext) {
 
     console.log(`Current workspace: ${currentWorkspace}`);
 
-    const startTerminalsAutomatically = vscode.workspace.getConfiguration('optiDev').get<boolean>(startTerminalsAutomaticallyKey, false);
-    if (!startTerminalsAutomatically) {
+    const configuration = vscode.workspace.getConfiguration('optiDev');
+    const startTerminalsAutomatically = configuration.get<boolean>('startTerminalsAutomatically');
+    if (startTerminalsAutomatically === undefined) {
         vscode.window.showInformationMessage('Automatic start of terminals is disabled');
         return;
     }
 
-    // Get the commands from the configuration
-    const devCommand = vscode.workspace.getConfiguration('optiDev').get<string>(devCommandKey, devCommandDefault);
-    const cypressCommand = vscode.workspace.getConfiguration('optiDev').get<string>(cypressCommandKey, cypressCommandDefault);
+    const devCommand = configuration.get<string>('devCommand', devCommandDefault);
+    const cypressCommand = configuration.get<string>('cypressCommand', cypressCommandDefault);
 
     console.log(`Dev command: ${devCommand}`);
     console.log(`Cypress command: ${cypressCommand}`);
 
-    // Function to find a terminal by name
     function findTerminal(name: string): vscode.Terminal | undefined {
         return vscode.window.terminals.find(terminal => terminal.name === name);
     }
 
-    // Function to check if a terminal is running
     function isTerminalRunning(name: string): boolean {
         const lastRunKey = `optiDev.${name}LastRun`;
         const lastRun = context.workspaceState.get<number>(lastRunKey, 0);
@@ -150,7 +138,6 @@ function startTerminalsAutomatically(context: vscode.ExtensionContext) {
         return isRunning;
     }
 
-    // Create or reuse the first terminal (Dev Server)
     let terminal1 = findTerminal('Dev Server');
     if (terminal1) {
         if (!isTerminalRunning('Dev Server')) {
@@ -167,7 +154,6 @@ function startTerminalsAutomatically(context: vscode.ExtensionContext) {
         console.log('Started new Dev Server terminal');
     }
 
-    // Create or reuse the second terminal (Cypress)
     let terminal2 = findTerminal('Cypress');
     if (terminal2) {
         if (!isTerminalRunning('Cypress')) {
@@ -188,17 +174,23 @@ function startTerminalsAutomatically(context: vscode.ExtensionContext) {
 async function configureCommand(commandKey: string, prompt: string) {
     const command = await vscode.window.showInputBox({ prompt });
     if (command) {
-        await vscode.workspace.getConfiguration('optiDev').update(commandKey, command, vscode.ConfigurationTarget.Global);
+        await vscode.workspace.getConfiguration('optiDev').update(commandKey, command, vscode.ConfigurationTarget.Workspace);
         vscode.window.showInformationMessage(`${commandKey} set to: ${command}`);
     }
 }
 
 function checkConfiguration(context: vscode.ExtensionContext) {
-    const devCommand = vscode.workspace.getConfiguration('optiDev').get<string>(devCommandKey);
-    const cypressCommand = vscode.workspace.getConfiguration('optiDev').get<string>(cypressCommandKey);
-    const startTerminalsOnStartup = vscode.workspace.getConfiguration('optiDev').get<boolean>(startTerminalsAutomaticallyKey, false);
+    const configuration = vscode.workspace.getConfiguration('optiDev');
+    const devCommand = configuration.get<string>('devCommand');
+    const cypressCommand = configuration.get<string>('cypressCommand');
+    const startTerminalsOnStartup = configuration.get<boolean>('startTerminalsAutomatically');
 
-    if (!devCommand || !cypressCommand || !startTerminalsOnStartup) {
+    console.log(`Dev command: ${devCommand}`);
+    console.log(`Cypress command: ${cypressCommand}`);
+    console.log(`Start terminals automatically: ${startTerminalsOnStartup}`);
+
+
+    if (!devCommand || !cypressCommand || startTerminalsOnStartup === undefined) {
         vscode.window.showWarningMessage(
             'OptiDev commands are not configured. Would you like to set them now?',
             'Yes', 'No'
@@ -206,10 +198,10 @@ function checkConfiguration(context: vscode.ExtensionContext) {
             if (selection === 'Yes') {
                 await vscode.commands.executeCommand('optidev.configureDevCommand');
                 await vscode.commands.executeCommand('optidev.configureCypressCommand');
-                await vscode.commands.executeCommand('optidev.configureStartTerminalsOnStartup');
+                await vscode.commands.executeCommand('optidev.configureStartOnStartup');
                 vscode.window.showInformationMessage('All configurations are set and terminals started');
             }
-        })
+        });
     } else {
         startTerminalsAutomatically(context);
     }
