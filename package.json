@@ -2,7 +2,7 @@
     "name": "optidev-terminals",
     "displayName": "OptiDev Terminals",
     "description": "A VS Code extension that automatically creates two terminals with user-defined commands.",
-    "version": "1.1.1",
+    "version": "1.2.0",
     "icon": "media/icon.png",
     "galleryBanner": {
         "color": "#2a6dab",
@@ -37,68 +37,75 @@
     "contributes": {
         "commands": [
             {
-                "command": "optidev.startTerminals",
-                "title": "OptiDev: Start Dev and Cypress"
-            },
-            {
-                "command": "optidev.configureDevCommand",
-                "title": "OptiDev: Configure Dev Server Command"
-            },
-            {
-                "command": "optidev.configureCypressCommand",
-                "title": "OptiDev: Configure Cypress Command"
-            },
-            {
-                "command": "optidev.configureStartOnStartup",
-                "title": "OptiDev: Configure Start On Startup"
-            },
-            {
                 "command": "optidev.showCurrentConfig",
                 "title": "OptiDev: Show Current Configuration"
+            },
+            {
+                "command": "optidev.createNewTerminal",
+                "title": "OptiDev: Create New Terminal"
+            },
+            {
+                "command": "optidev.editTerminal",
+                "title": "OptiDev: Edit Terminal"
+            },
+            {
+                "command": "optidev.deleteTerminal",
+                "title": "OptiDev: Delete Terminal"
+            },
+            {
+                "command": "optidev.showMainMenu",
+                "title": "OptiDev: Show Main Menu"
             }
         ],
         "menus": {
             "commandPalette": [
                 {
-                    "command": "optidev.startTerminals",
-                    "when": "workspaceFolderCount > 0"
-                },
-                {
-                    "command": "optidev.configureDevCommand",
-                    "when": "workspaceFolderCount > 0"
-                },
-                {
-                    "command": "optidev.configureCypressCommand",
-                    "when": "workspaceFolderCount > 0"
-                },
-                {
                     "command": "optidev.showCurrentConfig",
                     "when": "workspaceFolderCount > 0"
                 },
                 {
-                    "command": "optidev.configureStartOnStartup",
+                    "command": "optidev.createNewTerminal",
+                    "when": "workspaceFolderCount > 0"
+                },
+                {
+                    "command": "optidev.editTerminal",
+                    "when": "workspaceFolderCount > 0"
+                },
+                {
+                    "command": "optidev.deleteTerminal",
+                    "when": "workspaceFolderCount > 0"
+                },
+                {
+                    "command": "optidev.showMainMenu",
                     "when": "workspaceFolderCount > 0"
                 }
             ]
         },
         "configuration": {
             "type": "object",
-            "title": "Start Dev and Cypress Terminals Configuration",
+            "title": "OptiDev Terminals Configuration",
             "properties": {
-                "optiDev.startTerminalsAutomatically": {
-                    "type": "boolean",
-                    "default": false,
-                    "description": "Automatically start the terminals when VS Code starts"
-                },
-                "optiDev.devCommand": {
-                    "type": "string",
-                    "default": "npm run dev",
-                    "description": "Command to run in the first terminal (Dev Server)"
-                },
-                "optiDev.cypressCommand": {
-                    "type": "string",
-                    "default": "npm run cypress:open",
-                    "description": "Command to run in the second terminal (Cypress)"
+                "optiDev.terminals": {
+                    "type": "array",
+                    "description": "List of configured terminals",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {
+                                "type": "string",
+                                "description": "Name of the terminal"
+                            },
+                            "command": {
+                                "type": "string",
+                                "description": "Command to run in the terminal"
+                            },
+                            "start": {
+                                "type": "boolean",
+                                "description": "Start the terminal on extension activation"
+                            }
+                        }
+                    },
+                    "default": []
                 }
             }
         }

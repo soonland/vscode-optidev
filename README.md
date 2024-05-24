@@ -5,23 +5,50 @@ This VS Code extension allows you to configure and manage development and Cypres
 
 ## Features
 
-- Configure and automatically start terminals for development and Cypress commands.
-- Display and modify the current configuration from an intuitive menu.
+- **Start Terminals Automatically:** Configure whether terminals start automatically when the workspace opens.
+- **Show Current Configuration:** View the current configuration settings for each workspace.
+- **Create New Terminal:** Dynamically create new terminals with custom commands.
+- **Edit Terminal Configuration:** Edit the command of an existing terminal.
+- **Delete Terminal Configuration:** Delete an existing terminal configuration.
+- **Persist Terminals Configuration:** Save and restore terminal configurations across sessions.
+
 
 ## Default Configuration
 
-- **Dev Command**: `npm run dev`
-- **Cypress Command**: `npm run cypress:open`
+- **terminals**: `[]`
 
 ## Usage
 
 ### Available Commands
 
-- `OptiDev: Start Dev and Cypress`: Starts the configured terminals.
-- `OptiDev: Configure Dev Server Command`: Configures the development command.
-- `OptiDev: Configure Cypress Command`: Configures the Cypress command.
-- `OptiDev: Configure Start On Startup`: Configures the automatic start of terminals on VS Code startup.
-- `OptiDev: Show Current Configuration`: Displays the current configuration.
+- `OptiDev: Show Current Configuration` - Display the current configuration settings for the active workspace.
+- `OptiDev: Create New Terminal` - Create a new terminal with a custom command.
+- `OptiDev: Edit Terminal` - Edit the command of an existing terminal.
+- `OptiDev: Delete Terminal` - Delete an existing terminal configuration.
+- `OptiDev: Show Main Menu` - Show the main menu with all available options.
+
+### Creating New Terminals
+
+1. Open the Command Palette (`Ctrl+Shift+P` or `Cmd+Shift+P` on Mac).
+2. Type `OptiDev: Create New Terminal` and press Enter.
+3. Enter the command you want to run in the new terminal. The terminal configuration will be saved and restored on next startup.
+
+### Editing a Terminal
+
+1. Open the Command Palette (`Ctrl+Shift+P` or `Cmd+Shift+P` on Mac).
+2. Type `OptiDev: Edit Terminal` and press Enter.
+3. Select the terminal you want to edit.
+4. Enter the new command for the terminal. The updated configuration will be saved and restored on next startup.
+
+### Deleting a Terminal
+
+1. Open the Command Palette (`Ctrl+Shift+P` or `Cmd+Shift+P` on Mac).
+2. Type `OptiDev: Delete Terminal` and press Enter.
+3. Select the terminal you want to delete. The configuration will be removed and not restored on next startup.
+
+### Migrating Existing Configuration
+
+If you have previously configured the extension, your settings will be automatically migrated to the new format the next time you activate the extension.
 
 ## Initial Configuration
 
