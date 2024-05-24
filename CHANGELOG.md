@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] - 2024-05-24
+
+### Added
+
+- **Create New Terminal:** Users can create new terminals with custom commands, and these configurations are saved and restored across sessions.
+- **Edit Terminal:** Users can now edit the command of an existing terminal configuration.
+- **Delete Terminal:** Users can now delete an existing terminal configuration.
+- **Migration Support:** Existing configurations are automatically migrated to the new format.
+
 ## [1.1.1] - 2024-05-22
 
 ### Added
