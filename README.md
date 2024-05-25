@@ -1,6 +1,6 @@
 # VS Code Extension: Start Dev & Cypress Terminals
 
-This VS Code extension allows you to configure and manage development and Cypress testing commands across multiple workspaces. You can easily set up commands, configure terminal behavior, and control whether terminals start automatically on workspace startup.
+This VS Code extension allows you to configure and manage terminal commands across multiple workspaces. You can easily set up commands, configure terminal behavior, and control whether terminals start automatically on workspace startup.
 
 
 ## Features
