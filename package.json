@@ -37,10 +37,6 @@
     "contributes": {
         "commands": [
             {
-                "command": "optidev.showCurrentConfig",
-                "title": "OptiDev: Show Current Configuration"
-            },
-            {
                 "command": "optidev.createNewTerminal",
                 "title": "OptiDev: Create New Terminal"
             },
@@ -53,8 +49,8 @@
                 "title": "OptiDev: Delete Terminal"
             },
             {
-                "command": "optidev.showMainMenu",
-                "title": "OptiDev: Show Main Menu"
+                "command": "optidev.showCurrentConfig",
+                "title": "OptiDev: Show Terminal Command"
             }
         ],
         "menus": {
@@ -73,10 +69,6 @@
                 },
                 {
                     "command": "optidev.deleteTerminal",
-                    "when": "workspaceFolderCount > 0"
-                },
-                {
-                    "command": "optidev.showMainMenu",
                     "when": "workspaceFolderCount > 0"
                 }
             ]
@@ -114,9 +106,9 @@
         "vscode:prepublish": "npm run compile",
         "compile": "tsc -p ./",
         "watch": "tsc -w -p ./",
-        "pretest": "npm run compile && npm run lint",
-        "lint": "eslint src --ext ts",
-        "test": "node ./out/test/runTest.js"
+        "pretest": "npm run compile",
+        "lint": "eslint 'src/**/*.ts'",
+        "test": "npm run compile && mocha ./out/test/runTest.js"
     },
     "devDependencies": {
         "@types/node": "^14.0.0",

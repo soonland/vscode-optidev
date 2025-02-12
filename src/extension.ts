@@ -10,7 +10,6 @@ const EDIT_TERMINAL = 'Edit Terminal';
 const DELETE_TERMINAL = 'Delete Terminal';
 const SHOW_CURRENT_CONFIGURATION = 'Show Current Configuration';
 
-
 // Constants for quick pick options
 const YES = 'Yes';
 const NO = 'No';
@@ -133,41 +132,69 @@ function showConfiguration() {
         if (selection[0]) {
             if (selection[0].label === '$(arrow-left) Back') {
                 quickPick.hide();
-                showMainMenu();
             } else {
-                vscode.window.showInformationMessage(`Selected: ${selection[0].label}`);
+                const terminalConfig = terminals.find(term => term.name === selection[0].label);
+                if (terminalConfig) {
+                    let terminal = vscode.window.terminals.find(t => t.name === terminalConfig.name);
+                    if (!terminal) {
+                        terminal = vscode.window.createTerminal({ name: terminalConfig.name });
+                    }
+                    terminal.show();
+                    terminal.sendText(terminalConfig.command);
+                    vscode.window.showInformationMessage(`Executed command in terminal "${terminalConfig.name}"`);
+                }
             }
         }
     });
     quickPick.show();
 }
 
-function showMainMenu() {
-    const items: vscode.QuickPickItem[] = [
-        { label: CREATE_NEW_TERMINAL, alwaysShow: true },
-        { label: EDIT_TERMINAL, alwaysShow: true },
-        { label: DELETE_TERMINAL, alwaysShow: true },
-        { label: SHOW_CURRENT_CONFIGURATION, alwaysShow: true }
-    ];
 
-    const quickPick = vscode.window.createQuickPick();
-    quickPick.items = items;
-    quickPick.placeholder = 'Main Menu';
-    quickPick.onDidChangeSelection(selection => {
-        if (selection[0]) {
-            quickPick.hide();
-            if (selection[0].label === CREATE_NEW_TERMINAL) {
-                vscode.commands.executeCommand('optidev.createNewTerminal');
-            } else if (selection[0].label === EDIT_TERMINAL) {
-                vscode.commands.executeCommand('optidev.editTerminal');
-            } else if (selection[0].label === DELETE_TERMINAL) {
-                vscode.commands.executeCommand('optidev.deleteTerminal');
-            } else if (selection[0].label === SHOW_CURRENT_CONFIGURATION) {
-                showConfiguration();
-            }
+async function createOrEditTerminal(existingTerminal?: { name: string, command: string, start: boolean }) {
+    const name = await vscode.window.showInputBox({ prompt: 'Enter terminal name', value: existingTerminal?.name, validateInput: validateTerminalName });
+    if (!name) return;
+
+    const command = await vscode.window.showInputBox({ prompt: 'Enter terminal command', value: existingTerminal?.command, validateInput: validateTerminalCommand });
+    if (!command) return;
+
+    const start = await vscode.window.showQuickPick([YES, NO], { placeHolder: 'Launch terminal automatically?' }) === YES;
+
+    const terminalsConfig = vscode.workspace.getConfiguration(OPTIDEV).get<{ name: string, command: string, start: boolean }[]>('terminals', []);
+    if (existingTerminal) {
+        const index = terminalsConfig.findIndex(term => term.name === existingTerminal.name);
+        terminalsConfig[index] = { name, command, start };
+    } else {
+        terminalsConfig.push({ name, command, start });
+    }
+
+    await vscode.workspace.getConfiguration(OPTIDEV).update('terminals', terminalsConfig, vscode.ConfigurationTarget.Workspace);
+    vscode.window.showInformationMessage(`Terminal ${existingTerminal ? 'updated' : 'created'}: ${name}`);
+}
+
+async function selectTerminalForEditOrDelete(action: 'edit' | 'delete') {
+    const terminalsConfig = vscode.workspace.getConfiguration(OPTIDEV).get<{ name: string, command: string, start: boolean }[]>('terminals', []);
+    if (terminalsConfig.length === 0) {
+        vscode.window.showInformationMessage('No terminals configured.');
+        return;
+    }
+
+    const terminalNames = terminalsConfig.map(term => term.name);
+    const selectedTerminalName = await vscode.window.showQuickPick(terminalNames, { placeHolder: `Select terminal to ${action}` });
+
+    if (!selectedTerminalName) return;
+
+    const terminalConfig = terminalsConfig.find(term => term.name === selectedTerminalName);
+
+    if (action === 'edit') {
+        createOrEditTerminal(terminalConfig);
+    } else if (action === 'delete') {
+        const confirmation = await vscode.window.showWarningMessage(`Are you sure you want to delete the terminal "${selectedTerminalName}"?`, { modal: true }, YES, NO);
+        if (confirmation === YES) {
+            const updatedTerminals = terminalsConfig.filter(term => term.name !== selectedTerminalName);
+            await vscode.workspace.getConfiguration(OPTIDEV).update('terminals', updatedTerminals, vscode.ConfigurationTarget.Workspace);
+            vscode.window.showInformationMessage(`Terminal "${selectedTerminalName}" deleted.`);
         }
-    });
-    quickPick.show();
+    }
 }
 
 async function checkAndMigrateConfiguration(context: vscode.ExtensionContext) {
@@ -205,6 +232,7 @@ async function checkAndMigrateConfiguration(context: vscode.ExtensionContext) {
     }
 }
 
+
 export function activate(context: vscode.ExtensionContext) {
     console.log('Extension "OptiDev: Terminals" is now active!');
 
@@ -226,14 +254,12 @@ export function activate(context: vscode.ExtensionContext) {
         showConfiguration();
     });
 
-    let showMainMenuCommand = vscode.commands.registerCommand('optidev.showMainMenu', () => {
-        showMainMenu();
-    });
+
 
     // Check configuration on startup
     checkConfiguration(context);
 
-    context.subscriptions.push(createNewTerminalCommand, editTerminalCommand, deleteTerminalCommand, showCurrentConfig, showMainMenuCommand);
+    context.subscriptions.push(createNewTerminalCommand, editTerminalCommand, deleteTerminalCommand, showCurrentConfig);
 }
 
 function startTerminalsAutomatically(context: vscode.ExtensionContext) {
