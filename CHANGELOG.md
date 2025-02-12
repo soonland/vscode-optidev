@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.0] - 2025-02-12
+
+- **Major Update:** Updated dependencies
+- **Refactor:** Refactored menu navigation
+
 ## [1.2.0] - 2024-05-24
 
 ### Added
