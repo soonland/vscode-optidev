@@ -1,76 +1,100 @@
-# VS Code Extension: Start Dev & Cypress Terminals
+# VS Code Extension: OptiDev Terminals
 
-This VS Code extension allows you to configure and manage terminal commands across multiple workspaces. You can easily set up commands, configure terminal behavior, and control whether terminals start automatically on workspace startup.
+This VS Code extension has been completely redesigned with a modern and intuitive interface while maintaining full compatibility with existing configurations. It provides the same powerful terminal management features you're familiar with, but with an enhanced user experience through a dedicated sidebar view and streamlined interactions.
 
+The extension preserves all your existing terminal configurations and settings, ensuring a seamless transition to the new interface. Whether you're an existing user or new to the extension, you'll find it easier than ever to configure and manage your terminals across workspaces.
 
 ## Features
 
-- **Start Terminals Automatically:** Configure whether terminals start automatically when the workspace opens.
-- **Show Current Configuration:** View the current configuration settings for each workspace.
-- **Create New Terminal:** Dynamically create new terminals with custom commands.
-- **Edit Terminal Configuration:** Edit the command of an existing terminal.
-- **Delete Terminal Configuration:** Delete an existing terminal configuration.
-- **Persist Terminals Configuration:** Save and restore terminal configurations across sessions.
-
-
-## Default Configuration
-
-- **terminals**: `[]`
+- **Dedicated Side Bar View:** Quick access to all your configured terminals
+- **Quick Actions:** 
+  - ▶️ Start terminal
+  - ⏹️ Stop terminal
+  - ✏️ Edit configuration
+  - 🗑️ Delete terminal
+- **Multi-terminal Management:** Create and edit multiple terminals simultaneously
+- **Persistent Configuration:** Automatic saving of your settings
+- **Auto-start:** Option to launch terminals automatically on startup
 
 ## Usage
 
-### Available Commands
+### Terminals View
 
-- `OptiDev: Show Current Configuration` - Display the current configuration settings for the active workspace.
-- `OptiDev: Create New Terminal` - Create a new terminal with a custom command.
-- `OptiDev: Edit Terminal` - Edit the command of an existing terminal.
-- `OptiDev: Delete Terminal` - Delete an existing terminal configuration.
-- `OptiDev: Show Main Menu` - Show the main menu with all available options.
+1. Click on the terminal icon in the activity bar to open the OptiDev Terminals view
+2. Use the "+" button to create a new terminal
+3. Each terminal displays quick actions on hover:
+   - Start: runs the terminal with configured command
+   - Stop: terminates the terminal
+   - Edit: opens the modification form
+   - Delete: removes the configuration (with confirmation)
 
-### Creating New Terminals
+### Creating/Editing a Terminal
 
-1. Open the Command Palette (`Ctrl+Shift+P` or `Cmd+Shift+P` on Mac).
-2. Type `OptiDev: Create New Terminal` and press Enter.
-3. Enter the command you want to run in the new terminal. The terminal configuration will be saved and restored on next startup.
+1. A modern form opens in a tab
+2. Fill in:
+   - Terminal name
+   - Command to execute
+   - Auto-start option
+3. Multiple terminals can be edited simultaneously
+4. Changes are applied immediately
 
-### Editing a Terminal
+### Default Configuration
 
-1. Open the Command Palette (`Ctrl+Shift+P` or `Cmd+Shift+P` on Mac).
-2. Type `OptiDev: Edit Terminal` and press Enter.
-3. Select the terminal you want to edit.
-4. Enter the new command for the terminal. The updated configuration will be saved and restored on next startup.
+- **terminals**: `[]` (array of terminal configurations)
 
-### Deleting a Terminal
+### Configuration Format
 
-1. Open the Command Palette (`Ctrl+Shift+P` or `Cmd+Shift+P` on Mac).
-2. Type `OptiDev: Delete Terminal` and press Enter.
-3. Select the terminal you want to delete. The configuration will be removed and not restored on next startup.
+```json
+{
+  "optiDev.terminals": [
+    {
+      "name": "Dev Server",
+      "command": "npm run dev",
+      "start": true
+    },
+    {
+      "name": "Tests",
+      "command": "npm run test",
+      "start": false
+    }
+  ]
+}
+```
 
-### Migrating Existing Configuration
+### Migration
 
-If you have previously configured the extension, your settings will be automatically migrated to the new format the next time you activate the extension.
+If you were using a previous version of the extension, you don't need to do anything special - your configurations will be automatically migrated to the new format on next startup. The extension will preserve:
+- All your terminal configurations
+- Auto-start settings
+- Command definitions
+- Workspace-specific settings
 
-## Initial Configuration
+This ensures a zero-configuration transition to the new interface while maintaining all your existing workflows.
 
-If the commands are not configured, the extension will prompt you to configure them at startup. You can also configure them manually via the main menu.
+## What's New
 
-### Configuration
+This redesign brings several improvements to enhance your terminal management experience:
 
-You can configure the extension settings for each workspace individually. The settings can be adjusted via the `settings.json` file or through the provided commands.
+- **Streamlined Interface**: New sidebar view with all terminals and actions in one place
+- **Quick Actions**: Directly accessible controls for each terminal (start, stop, edit, delete)
+- **Multi-Terminal Management**: Edit multiple terminals simultaneously in separate tabs
+- **Modern Forms**: Enhanced terminal configuration interface
+- **Improved Feedback**: Clear visual indicators and confirmations for all actions
 
-Access the main menu by using the command palette `(Cmd/Ctrl + Shift + P)`. The main menu provides the following options:
+All these improvements come without breaking changes to your existing configurations or workflows.
 
-- **Configure Dev Command:**
-    - Allows you to set the command that will be used to start your development server.
-    - By default, this is set to `npm run dev`.
+## Initial Setup
 
-- **Configure Cypress Command:**
-    - Allows you to set the command that will be used to start Cypress for testing.
-    - By default, this is set to `npm run cypress:open`.
+If no terminals are configured, the extension will prompt you to create one at startup. You can also:
 
-- **Configure Start Terminals Automatically:**
-    - Allows you to enable or disable the automatic start of terminals when VS Code starts.
-    - This can be set to `Yes` or `No`.
+1. Open the OptiDev Terminals view
+2. Click the "+" button to create a new terminal
+3. Configure your terminals as needed
 
-- **Show Current Configuration:**
-    - Displays the current configuration settings including the development command, Cypress command, and whether automatic terminal start is enabled.
+## Notes
+
+- Each workspace can have its own configuration
+- Settings are saved in workspace settings
+- Interface adapts to VS Code theme
+- Terminal actions are context-aware and accessible
+- Multiple terminal configurations can be managed simultaneously

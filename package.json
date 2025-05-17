@@ -31,34 +31,62 @@
         "Other"
     ],
     "activationEvents": [
-        "onStartupFinished"
+        "onStartupFinished",
+        "onView:optidevTerminalsView"
     ],
     "main": "./out/extension.js",
     "contributes": {
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "optidev-terminals",
+                    "title": "OptiDev Terminals",
+                    "icon": "$(terminal)"
+                }
+            ]
+        },
+        "views": {
+            "optidev-terminals": [
+                {
+                    "id": "optidevTerminalsView",
+                    "name": "Terminals",
+                    "contextualTitle": "OptiDev Terminals"
+                }
+            ]
+        },
         "commands": [
             {
                 "command": "optidev.createNewTerminal",
-                "title": "OptiDev: Create New Terminal"
+                "title": "Create New Terminal"
             },
             {
                 "command": "optidev.editTerminal",
-                "title": "OptiDev: Edit Terminal"
+                "title": "Edit Terminal",
+                "icon": "$(edit)"
             },
             {
                 "command": "optidev.deleteTerminal",
-                "title": "OptiDev: Delete Terminal"
+                "title": "Delete Terminal",
+                "icon": "$(trash)"
             },
             {
-                "command": "optidev.showCurrentConfig",
-                "title": "OptiDev: Show Terminal Command"
+                "command": "optidev.refreshTerminals",
+                "title": "Refresh Terminals",
+                "icon": "$(refresh)"
+            },
+            {
+                "command": "optidev.startTerminal",
+                "title": "Start Terminal",
+                "icon": "$(play)"
+            },
+            {
+                "command": "optidev.stopTerminal",
+                "title": "Stop Terminal",
+                "icon": "$(stop)"
             }
         ],
         "menus": {
             "commandPalette": [
-                {
-                    "command": "optidev.showCurrentConfig",
-                    "when": "workspaceFolderCount > 0"
-                },
                 {
                     "command": "optidev.createNewTerminal",
                     "when": "workspaceFolderCount > 0"
@@ -70,6 +98,40 @@
                 {
                     "command": "optidev.deleteTerminal",
                     "when": "workspaceFolderCount > 0"
+                }
+            ],
+            "view/title": [
+                {
+                    "command": "optidev.createNewTerminal",
+                    "when": "view == optidevTerminalsView",
+                    "group": "navigation"
+                },
+                {
+                    "command": "optidev.refreshTerminals",
+                    "when": "view == optidevTerminalsView",
+                    "group": "navigation"
+                }
+            ],
+            "view/item/context": [
+                {
+                    "command": "optidev.startTerminal",
+                    "when": "view == optidevTerminalsView",
+                    "group": "inline@1"
+                },
+                {
+                    "command": "optidev.stopTerminal",
+                    "when": "view == optidevTerminalsView",
+                    "group": "inline@2"
+                },
+                {
+                    "command": "optidev.editTerminal",
+                    "when": "view == optidevTerminalsView",
+                    "group": "inline@3"
+                },
+                {
+                    "command": "optidev.deleteTerminal",
+                    "when": "view == optidevTerminalsView",
+                    "group": "inline@4"
                 }
             ]
         },
