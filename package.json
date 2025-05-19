@@ -31,7 +31,8 @@
         "Other"
     ],
     "activationEvents": [
-        "onStartupFinished"
+        "onStartupFinished",
+        "onView:optidevTerminalsView"
     ],
     "main": "./out/extension.js",
     "contributes": {
