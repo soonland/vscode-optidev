@@ -4,6 +4,8 @@ This VS Code extension has been completely redesigned with a modern and intuitiv
 
 The extension preserves all your existing terminal configurations and settings, ensuring a seamless transition to the new interface. Whether you're an existing user or new to the extension, you'll find it easier than ever to configure and manage your terminals across workspaces.
 
+![Preview](https://raw.githubusercontent.com/soonland/vscode-optidev/main/media/screenshot.png)
+
 ## Features
 
 - **Dedicated Side Bar View:** Quick access to all your configured terminals
