@@ -5,8 +5,8 @@ import { TerminalWebview } from "./terminalWebview";
 let terminalCount = 0; // Track the number of terminals created
 
 const OPTIDEV = "optiDev";
-const YES = "Oui";
-const NO = "Non";
+const YES = "Yes";
+const NO = "No";
 
 function createNewTerminal(context: vscode.ExtensionContext) {
   TerminalWebview.createOrShow(context.extensionUri);
@@ -29,7 +29,7 @@ async function deleteTerminal(context: vscode.ExtensionContext, item?: any) {
 
   const terminalName = item.terminalData.name;
   const confirmation = await vscode.window.showWarningMessage(
-    `Êtes-vous sûr de vouloir supprimer le terminal "${terminalName}" ?`,
+    `Are you sure you want to delete the terminal "${terminalName}"?`,
     { modal: true },
     YES,
     NO
@@ -58,9 +58,7 @@ async function deleteTerminal(context: vscode.ExtensionContext, item?: any) {
       );
 
     vscode.commands.executeCommand("optidev.refreshTerminals");
-    vscode.window.showInformationMessage(
-      `Terminal "${terminalName}" supprimé.`
-    );
+    vscode.window.showInformationMessage(`Terminal "${terminalName}" deleted.`);
   }
 }
 
@@ -337,7 +335,7 @@ async function checkConfiguration(context: vscode.ExtensionContext) {
     if (terminals === undefined || terminals.length === 0) {
       vscode.window
         .showWarningMessage(
-          "OptiDev commands are not configured. Would you like to set them now?",
+          "OptiDev commands are not configured. Would you like to configure them now?",
           YES,
           NO
         )
@@ -347,7 +345,7 @@ async function checkConfiguration(context: vscode.ExtensionContext) {
               .executeCommand("optidev.createNewTerminal")
               .then(() => {
                 vscode.window.showInformationMessage(
-                  "All configurations are set and terminals started"
+                  "All configurations have been set and terminals started"
                 );
               });
           }

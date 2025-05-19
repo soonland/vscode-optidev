@@ -1,98 +1,115 @@
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 
 export class TerminalWebview {
-    private static readonly panels = new Map<string, TerminalWebview>();
-    private readonly _panel: vscode.WebviewPanel;
-    private _disposables: vscode.Disposable[] = [];
+  private static readonly panels = new Map<string, TerminalWebview>();
+  private readonly _panel: vscode.WebviewPanel;
+  private _disposables: vscode.Disposable[] = [];
 
-    private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
-        this._panel = panel;
-        this._panel.webview.html = this._getWebviewContent();
-        this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
-        this._panel.webview.onDidReceiveMessage(
-            async (message) => {
-                switch (message.command) {
-                    case 'updateTitle':
-                        this._panel.title = message.title;
-                        break;
-                    case 'saveTerminal':
-                        const terminalConfig = message.terminal;
-                        const terminals = vscode.workspace.getConfiguration('optiDev').get<any[]>('terminals', []);
-                        
-                        if (message.isEdit && terminalConfig.originalName) {
-                            const index = terminals.findIndex(t => t.name === terminalConfig.originalName);
-                            if (index >= 0) {
-                                terminals[index] = {
-                                    name: terminalConfig.name,
-                                    command: terminalConfig.command,
-                                    start: terminalConfig.autoStart
-                                };
-                            }
-                        } else {
-                            terminals.push({
-                                name: terminalConfig.name,
-                                command: terminalConfig.command,
-                                start: terminalConfig.autoStart
-                            });
-                        }
+  private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
+    this._panel = panel;
+    this._panel.webview.html = this._getWebviewContent();
+    this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
+    this._panel.webview.onDidReceiveMessage(
+      async (message) => {
+        switch (message.command) {
+          case "updateTitle":
+            this._panel.title = message.title;
+            break;
+          case "saveTerminal":
+            const terminalConfig = message.terminal;
+            const terminals = vscode.workspace
+              .getConfiguration("optiDev")
+              .get<any[]>("terminals", []);
 
-                        await vscode.workspace.getConfiguration('optiDev').update('terminals', terminals, vscode.ConfigurationTarget.Workspace);
-                        
-                        // Rafraîchir la vue des terminaux
-                        vscode.commands.executeCommand('optidev.refreshTerminals');
-                        
-                        // Afficher un message de confirmation
-                        const action = message.isEdit ? 'modifié' : 'créé';
-                        vscode.window.showInformationMessage(`Terminal "${terminalConfig.name}" ${action}.`);
-                        
-                        // Fermer uniquement ce panel spécifique
-                        this._panel.dispose();
-                        break;
-                }
-            },
-            null,
-            this._disposables
-        );
-    }
-
-    public static createOrShow(extensionUri: vscode.Uri, terminalToEdit?: { name: string, command: string, start: boolean }) {
-        const terminalId = terminalToEdit ? terminalToEdit.name : `new-${Date.now()}`;
-
-        // Si un panel existe déjà pour ce terminal, on le montre
-        if (TerminalWebview.panels.has(terminalId)) {
-            TerminalWebview.panels.get(terminalId)?._panel.reveal();
-            return;
-        }
-
-        // Créer un nouveau panel
-        const panel = vscode.window.createWebviewPanel(
-            'terminalEditor',
-            terminalToEdit ? `Modifier ${terminalToEdit.name}` : 'Nouveau terminal',
-            vscode.ViewColumn.Active,
-            {
-                enableScripts: true,
-                retainContextWhenHidden: true
+            if (message.isEdit && terminalConfig.originalName) {
+              const index = terminals.findIndex(
+                (t) => t.name === terminalConfig.originalName
+              );
+              if (index >= 0) {
+                terminals[index] = {
+                  name: terminalConfig.name,
+                  command: terminalConfig.command,
+                  start: terminalConfig.autoStart,
+                };
+              }
+            } else {
+              terminals.push({
+                name: terminalConfig.name,
+                command: terminalConfig.command,
+                start: terminalConfig.autoStart,
+              });
             }
-        );
 
-        const webview = new TerminalWebview(panel, extensionUri);
-        TerminalWebview.panels.set(terminalId, webview);
+            await vscode.workspace
+              .getConfiguration("optiDev")
+              .update(
+                "terminals",
+                terminals,
+                vscode.ConfigurationTarget.Workspace
+              );
 
-        // Supprimer le panel de la map quand il est fermé
-        panel.onDidDispose(() => {
-            TerminalWebview.panels.delete(terminalId);
-        });
+            // Refresh terminals view
+            vscode.commands.executeCommand("optidev.refreshTerminals");
 
-        if (terminalToEdit) {
-            panel.webview.postMessage({
-                command: 'setTerminal',
-                terminal: terminalToEdit
-            });
+            // Show confirmation message
+            const action = message.isEdit ? "modified" : "created";
+            vscode.window.showInformationMessage(
+              `Terminal "${terminalConfig.name}" ${action}.`
+            );
+
+            // Close only this specific panel
+            this._panel.dispose();
+            break;
         }
+      },
+      null,
+      this._disposables
+    );
+  }
+
+  public static createOrShow(
+    extensionUri: vscode.Uri,
+    terminalToEdit?: { name: string; command: string; start: boolean }
+  ) {
+    const terminalId = terminalToEdit
+      ? terminalToEdit.name
+      : `new-${Date.now()}`;
+
+    // If a panel already exists for this terminal, show it
+    if (TerminalWebview.panels.has(terminalId)) {
+      TerminalWebview.panels.get(terminalId)?._panel.reveal();
+      return;
     }
 
-    private _getWebviewContent() {
-        return `<!DOCTYPE html>
+    // Create a new panel
+    const panel = vscode.window.createWebviewPanel(
+      "terminalEditor",
+      terminalToEdit ? `Edit ${terminalToEdit.name}` : "New Terminal",
+      vscode.ViewColumn.Active,
+      {
+        enableScripts: true,
+        retainContextWhenHidden: true,
+      }
+    );
+
+    const webview = new TerminalWebview(panel, extensionUri);
+    TerminalWebview.panels.set(terminalId, webview);
+
+    // Remove the panel from the map when it is closed
+    panel.onDidDispose(() => {
+      TerminalWebview.panels.delete(terminalId);
+    });
+
+    if (terminalToEdit) {
+      panel.webview.postMessage({
+        command: "setTerminal",
+        terminal: terminalToEdit,
+      });
+    }
+  }
+
+  private _getWebviewContent() {
+    return `<!DOCTYPE html>
         <html>
         <head>
             <meta charset="UTF-8">
@@ -136,20 +153,20 @@ export class TerminalWebview {
         <body>
             <form id="terminalForm">
                 <div class="form-group">
-                    <label for="name">Nom du terminal:</label>
+                    <label for="name">Terminal name:</label>
                     <input type="text" id="name" name="name" required>
                 </div>
                 <div class="form-group">
-                    <label for="command">Commande:</label>
+                    <label for="command">Command:</label>
                     <input type="text" id="command" name="command" required>
                 </div>
                 <div class="checkbox-group">
                     <label>
                         <input type="checkbox" id="autoStart" name="autoStart">
-                        Démarrer automatiquement
+                        Start automatically
                     </label>
                 </div>
-                <button type="submit">Sauvegarder</button>
+                <button type="submit">Save</button>
             </form>
             <script>
                 const vscode = acquireVsCodeApi();
@@ -168,14 +185,14 @@ export class TerminalWebview {
                     }
                 });
 
-                // Mettre à jour le titre lors de la saisie du nom
+                // Update title when name is entered
                 document.getElementById('name').addEventListener('input', function(e) {
                     const inputElement = e.target;
                     const newName = inputElement.value;
                     if (newName) {
                         vscode.postMessage({
                             command: 'updateTitle',
-                            title: originalName ? 'Modifier ' + newName : 'Nouveau terminal - ' + newName
+                            title: originalName ? 'Edit ' + newName : 'New Terminal - ' + newName
                         });
                     }
                 });
@@ -200,15 +217,15 @@ export class TerminalWebview {
             </script>
         </body>
         </html>`;
-    }
+  }
 
-    private dispose() {
-        while (this._disposables.length) {
-            const disposable = this._disposables.pop();
-            if (disposable) {
-                disposable.dispose();
-            }
-        }
-        this._panel.dispose();
+  private dispose() {
+    while (this._disposables.length) {
+      const disposable = this._disposables.pop();
+      if (disposable) {
+        disposable.dispose();
+      }
     }
+    this._panel.dispose();
+  }
 }

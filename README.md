@@ -1,6 +1,6 @@
 # VS Code Extension: OptiDev Terminals
 
-This VS Code extension has been completely redesigned with a modern and intuitive interface while maintaining full compatibility with existing configurations. It provides the same powerful terminal management features you're familiar with, but with an enhanced user experience through a dedicated sidebar view and streamlined interactions.
+This VS Code extension has been completely redesigned with a modern and intuitive interface while maintaining full compatibility with existing configurations. It provides powerful terminal management features through a dedicated sidebar view and streamlined interactions.
 
 The extension preserves all your existing terminal configurations and settings, ensuring a seamless transition to the new interface. Whether you're an existing user or new to the extension, you'll find it easier than ever to configure and manage your terminals across workspaces.
 

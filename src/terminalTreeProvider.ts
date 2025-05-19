@@ -23,9 +23,9 @@ export class TerminalTreeItem extends vscode.TreeItem {
       start: this.autoStart,
     };
 
-    this.tooltip = `${this.label}\nCommande: ${
+    this.tooltip = `${this.label}\nCommand: ${
       this.terminalCommand
-    }\nDémarrage auto: ${this.autoStart ? "Oui" : "Non"}`;
+    }\nAuto-start: ${this.autoStart ? "Yes" : "No"}`;
     this.description = this.autoStart ? "Auto-start" : "";
 
     // Icône de terminal standard
@@ -34,7 +34,7 @@ export class TerminalTreeItem extends vscode.TreeItem {
     // Au clic, on montre simplement le terminal
     this.command = {
       command: "optidev.showTerminal",
-      title: "Afficher le terminal",
+      title: "Show terminal",
       arguments: [this.label],
     } as vscode.Command;
 
@@ -78,7 +78,7 @@ export class TerminalTreeProvider
 
   async getChildren(element?: TerminalTreeItem): Promise<TerminalTreeItem[]> {
     if (element) {
-      return []; // Pas de sous-éléments pour le moment
+      return []; // No sub-elements for now
     }
 
     const terminalsConfig = vscode.workspace
